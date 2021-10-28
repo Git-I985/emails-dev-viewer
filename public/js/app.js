@@ -17,7 +17,23 @@ const app = Vue.createApp({
         }
     },
     created() {
-        this.fetchEmails()
+        this.fetchEmails();
+        window.addEventListener("keydown", (e) => {
+            const { key } = e;
+
+            if (document.activeElement.classList.contains("form-select") || !["ArrowUp", "ArrowDown"].includes(key)) {
+                return false;
+            }
+
+            e.preventDefault();
+
+            const pages = this.pages.filter(this.filters[this.selectedFilter]);
+            const currentPageIndex = pages.indexOf(this.page);
+            const newPageIndex = key === "ArrowUp" ? currentPageIndex - 1 : currentPageIndex + 1;
+            if (newPageIndex >= 0 && newPageIndex < pages.length) {
+                this.page = pages[newPageIndex];
+            }
+        });
     },
     beforeUpdate() {
         this.updateTitle()

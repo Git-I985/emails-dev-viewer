@@ -19,89 +19,92 @@
     <link rel="manifest" href="favicon/site.webmanifest">
 </head>
 <body>
-<div id="app">
-    <div class="inner" :class="{'loading': fetchingEmails}" v-cloak>
-        <div class="mb-5 mx-3" :class="{'sticky-top': stickyControlPanel}">
-            <div class="px-5 py-4 mt-5 shadow rounded-3 bg-white">
-                <div class="d-flex justify-content-between mb-3 border p-3 rounded-3 bg-light">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="flexCheckChecked" v-model="stickyControlPanel">
-                        <label class="form-check-label" for="flexCheckChecked">Pin on top</label>
-                    </div>
+    <div id="app">
+        <div class="inner" :class="{'loading': fetchingEmails}" v-cloak>
+            <div class="mb-5 mx-3" :class="{'sticky-top': stickyControlPanel}">
+                <div class="px-5 py-4 mt-5 shadow rounded-3 bg-white">
+                    <div class="d-flex justify-content-between mb-3 border p-3 rounded-3 bg-light">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="flexCheckChecked" v-model="stickyControlPanel" tabindex="-1" />
+                            <label class="form-check-label" for="flexCheckChecked">Pin on top</label>
+                        </div>
                     <i class="fas fa-sync-alt mx-2 link-icon icon-tooltip p-1"
                        :class="{'spin': fetchingEmails}"
                        @click="fetchEmails"
                     >
-                        <span class="icon-tooltiptext">Sync emails</span>
-                    </i>
-                </div>
-                <div class="row">
-                    <div class="col-md-2 col-sm-12">
-                        <label class="form-label text-muted">Language ({{ Object.keys(langs).length }} langs)</label>
-                        <select v-model="lang" class="form-select form-select-lg bg-light text-capitalize">
-                            <option v-for="(lang, name) in langs" :value="name" class="d-flex justify-content-between">
-                                {{ lang }}
-                            </option>
-                        </select>
+                <span class="icon-tooltiptext">Sync emails</span>
+              </i>
                     </div>
-                    <div class="col-md-2 col-sm-12">
-                        <label class="form-label text-muted">Category</label>
-                        <select v-model="selectedFilter" class="form-select form-select-lg bg-light text-capitalize">
-                            <option v-for="(filter, index) in Object.keys(filters)" :value="filter" :key="index">{{ filter }}</option>
-                        </select>
+                    <div class="row">
+                        <div class="col-md-2 col-sm-12">
+                            <label class="form-label text-muted">Language ({{ Object.keys(langs).length }} langs)</label>
+                            <select v-model="lang" class="form-select form-select-lg bg-light text-capitalize" tabindex="1">
+                  <option v-for="(lang, name) in langs" :value="name" class="d-flex justify-content-between">
+                    {{ lang }}
+                  </option>
+                </select>
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <label class="form-label text-muted">Category</label>
+                            <select v-model="selectedFilter" class="form-select form-select-lg bg-light text-capitalize" tabindex="-1">
+                  <option v-for="(filter, index) in Object.keys(filters)" :value="filter" :key="index">
+                    {{ filter }}
+                  </option>
+                </select>
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <label class="form-label text-muted">Page {{ filteredPages.indexOf(page) + 1}}/{{ filteredPages.length }}</label>
+                            <select v-model="page" class="form-select form-select-lg bg-light" tabindex="2" autofocus>
+                  <option v-for="page in filteredPages" :value="page">{{ page }}</option>
+                </select>
+                        </div>
                     </div>
-                    <div class="col-md-8 col-sm-12">
-                        <label class="form-label text-muted">Page ({{ filteredPages.length }} pages)</label>
-                        <select v-model="page" class="form-select form-select-lg bg-light" autofocus>
-                            <option v-for="page in filteredPages" :value="page">{{ page }}</option>
-                        </select>
+                    <div class="row mt-4">
+                        <div class="col fs-5 text-center">{{ subject }}</div>
                     </div>
-                </div>
-                <div class="row mt-4">
-                    <div class="col fs-5 text-center">{{ subject }}</div>
                 </div>
             </div>
-        </div>
-        <div class="d-flex justify-content-center flex-column flex-xl-row">
-            <div v-for="resolution in resolutions" class="mx-3 mb-5">
-                <div class="d-flex justify-content-between mb-3 align-items-center bg-light p-3 rounded border">
-                    <div class="icon-tooltip">
+            <div class="d-flex justify-content-center flex-column flex-xl-row">
+                <div v-for="resolution in resolutions" class="mx-3 mb-5">
+                    <div class="d-flex justify-content-between mb-3 align-items-center bg-light p-3 rounded border">
+                        <div class="icon-tooltip">
                         <span class="fs-4 text-secondary resolution ">{{ resolution }}px</span>
-                        <span class="icon-tooltiptext">Email resolution</span>
-                    </div>
-                    <div class="actions d-flex">
-                        <!-- Opens email in new tab -->
+                            <span class="icon-tooltiptext">Email resolution</span>
+                        </div>
+                        <div class="actions d-flex">
+                            <!-- Opens email in new tab -->
                         <i class="fas fa-external-link-alt mx-2 link-icon icon-tooltip p-1"
                            :data-href="getUrl('template')"
                            @click="openEmailInNewTab"
                         ><span class="icon-tooltiptext">Open email in new tab</span></i>
-                        <!-- Copy to clipboard -->
+                <!-- Copy to clipboard -->
                         <i class="far fa-clone mx-2 link-icon icon-tooltip p-1"
-                           :class="copied ? 'muted' : 'link-icon'"
+                  :class="copied ? 'muted' : 'link-icon'"
                            @click="copyEmailHtmlToClipboard"><span class="icon-tooltiptext">Copy email <b>HTML</b> code</span></i>
-                        <!-- Opens postdrop -->
+                <!-- Opens postdrop -->
                         <i class="fab fa-product-hunt mx-2 link-icon icon-tooltip p-1"
-                           data-href="https://app.postdrop.io/"
-                           @click="goToPostdrop"
+                  data-href="https://app.postdrop.io/"
+                  @click="goToPostdrop"
                         ><span class="icon-tooltiptext">Open <span class="text-decoration-underline text-warning">Postdrop.io</span> with email <b>HTML</b> code</span></i>
-                    </div>
-                </div>
-                <div class="text-center rounded border d-flex justify-content-start iframe-wrapper">
-                    <iframe :src="getUrl('template')"
-                            :style="{'width': resolution + 'px'}"
-                            class="shadow-lg preview-iframe rounded loading"
-                    ></iframe>
-                </div>
+              </div>
             </div>
+            <div class="text-center rounded border d-flex justify-content-start iframe-wrapper">
+                    <iframe :src="getUrl('template')"
+                :style="{'width': resolution + 'px'}"
+                class="shadow-lg preview-iframe rounded loading"
+                tabindex="-1"
+              ></iframe>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
 
-<script src="https://unpkg.com/vue@next"></script>
+    <script src="https://unpkg.com/vue@next"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+      integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
         crossorigin="anonymous"></script>
-<script src="js/app.js"></script>
-</body>
+    <script src="js/app.js"></script>
+  </body>
 </html>
 

@@ -50,14 +50,14 @@
                                 </select>
                             </div>
                             <div class="col-md-8 col-sm-12">
-                                <label class="form-label text-muted">Page ({{ filteredPages.length }} pages)</label>
+                                <label class="form-label text-muted">Page {{ filteredPages.indexOf(page) + 1}}/{{ filteredPages.length }}</label>
                                 <select v-model="page" class="form-select form-select-lg bg-light" autofocus>
                                     <option v-for="page in filteredPages" :value="page">{{ page }}</option>
                                 </select>
                             </div>
                         </div>
                         <div class="mt-4">
-                                <iframe :src="getUrl('subject')" id="subject"></iframe>
+                                <iframe :src="getUrl('subject')" id="subject" tabindex="-1"></iframe>
                         </div>
                     </div>
                 </div>
@@ -81,6 +81,7 @@
                                     style="min-height: 2500px"
                                     :style="{'width': resolution + 'px'}"
                                     class="shadow-lg preview-iframe rounded loading"
+                                    tabindex="-1"
                             ></iframe>
                         </div>
                     </div>
@@ -173,6 +174,22 @@
                 },
                 created() {
                     this.fetchEmails()
+                    window.addEventListener("keydown", (e) => {
+                        const { key } = e;
+
+                        if (document.activeElement.classList.contains("form-select") || !["ArrowUp", "ArrowDown"].includes(key)) {
+                            return false;
+                        }
+
+                        e.preventDefault();
+
+                        const pages = this.pages.filter(this.filters[this.selectedFilter]);
+                        const currentPageIndex = pages.indexOf(this.page);
+                        const newPageIndex = key === "ArrowUp" ? currentPageIndex - 1 : currentPageIndex + 1;
+                        if (newPageIndex >= 0 && newPageIndex < pages.length) {
+                            this.page = pages[newPageIndex];
+                        }
+                    });
                 },
                 beforeUpdate() {
                     this.updateTitle()
