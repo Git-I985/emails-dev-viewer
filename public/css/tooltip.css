@@ -1,0 +1,41 @@
+.icon-tooltip {
+    position: relative;
+    --bg-color: rgba(33, 37, 41, 0.74);
+}
+
+/* Tooltip text */
+.icon-tooltip .icon-tooltiptext {
+    pointer-events: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: all .2s ease;
+    font-family: var(--bs-body-font-family);
+    font-weight: normal;
+    background-color: var(--bg-color);
+    color: #efefef;
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    left: 50%;
+    transform: translate(-50%, -130%);
+    white-space: nowrap;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.icon-tooltip:hover .icon-tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+.icon-tooltip .icon-tooltiptext:after {
+    content: " ";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--bg-color) transparent transparent transparent;
+}
