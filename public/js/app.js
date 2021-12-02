@@ -15,6 +15,7 @@ const app = Vue.createApp({
             selectedFilter: 'all',
             stickyControlPanel: JSON.parse(localStorage.getItem('stickyControlPanel')) || false,
             oneResolution: JSON.parse(localStorage.getItem('oneResolution')) || false,
+            darkTheme: JSON.parse(localStorage.getItem('darkTheme')) || false,
         };
     },
     created() {
@@ -40,6 +41,7 @@ const app = Vue.createApp({
         this.updateTitle();
         this.updateSubject();
         // this.updateIframeHeight();
+        document.documentElement.className = this.darkTheme ? 'darkTheme' : '';
         this.copied = false;
     },
     computed: {
@@ -65,6 +67,9 @@ const app = Vue.createApp({
         },
         oneResolution(value) {
             localStorage.setItem('oneResolution', value);
+        },
+        darkTheme() {
+            localStorage.setItem('darkTheme', this.darkTheme);
         },
     },
     methods: {

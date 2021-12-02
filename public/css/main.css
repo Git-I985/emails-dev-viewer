@@ -2,10 +2,6 @@
     display: none;
 }
 
-body {
-    /* max-width: 1600px; */
-}
-
 #app {
     max-width: 1700px;
     margin: 0 auto;
@@ -40,7 +36,7 @@ body {
 
 iframe {
     background: var(--bs-light-rgb);
-    transition: all 1s ease;
+    /* transition: all 1s ease; */
 }
 
 #subject {
@@ -76,4 +72,16 @@ iframe {
 .controls-panel {
     backdrop-filter: blur(10px);
     opacity: 0.95;
+}
+
+html.darkTheme {
+    filter: invert(1) hue-rotate(180deg) contrast(0.8);
+}
+
+html.darkTheme * {
+    box-shadow: none !important;
+}
+
+html.darkTheme iframe {
+    filter: invert(1) hue-rotate(180deg) contrast(1.2);
 }
