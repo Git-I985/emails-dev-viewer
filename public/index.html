@@ -71,13 +71,18 @@
                                 >
                             </div>
                         </div>
-                        <i
-                            class="fas fa-sync-alt mx-2 link-icon icon-tooltip p-1"
-                            :class="{'spin': fetchingEmails}"
-                            @click="fetchEmails"
-                        >
-                            <span class="icon-tooltiptext">Sync emails</span>
-                        </i>
+                        <div>
+                            <i
+                                class="fas fa-sync-alt mx-2 link-icon icon-tooltip p-1"
+                                :class="{'spin': fetchingEmails}"
+                                @click="fetchEmails"
+                            >
+                                <span class="icon-tooltiptext">Sync emails</span>
+                            </i>
+                            <i class="fas fa-laptop-code mx-2 link-icon icon-tooltip p-1" @click="rerenderEmails">
+                                <span class="icon-tooltiptext">Rerender emails</span>
+                            </i>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12 col-lg-3 col-sm-12">
@@ -166,12 +171,21 @@
                     <div class="text-center rounded border d-flex justify-content-start iframe-wrapper">
                         <iframe
                             :src="getUrl('template')"
-                            style="height: 2500px"
+                            style="height: 3500px"
                             :style="{'width': resolution + 'px'}"
                             class="shadow-lg preview-iframe rounded loading"
                             tabindex="-1"
                         ></iframe>
                     </div>
+                </div>
+                <div class="mx-3 m b-5 shadow" v-if="oneResolution" style="max-width: 480px">
+                    <p class="text-break" v-for="link in iframeLinks">
+                        <span class="badge bg-secondary bg-opacity-10 text-dark fw-normal p-2"
+                            >{{link.text ? link.text : 'Image'}}</span
+                        >
+                        <br />
+                        <a :href="link.url" target="_blank">{{ link.text }}</a>
+                    </p>
                 </div>
             </div>
         </div>

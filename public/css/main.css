@@ -75,7 +75,7 @@ iframe {
 }
 
 html.darkTheme {
-    filter: invert(1) hue-rotate(180deg) contrast(0.8);
+    filter: invert(1) hue-rotate(180deg) opacity(0.9);
 }
 
 html.darkTheme * {
@@ -83,5 +83,30 @@ html.darkTheme * {
 }
 
 html.darkTheme iframe {
-    filter: invert(1) hue-rotate(180deg) contrast(1.2);
+    filter: invert(1) hue-rotate(180deg);
+}
+
+body.loading {
+    pointer-events: none;
+    max-height: 100vh;
+    overflow: hidden;
+    opacity: 0.5;
+}
+
+.form-switch {
+    padding: 0.3em 0.5em 0.3em 3em;
+    border-radius: 0.5em;
+    user-select: none;
+}
+
+.form-switch:hover {
+    background-color: #f2f4f5;
+}
+
+.form-select {
+    cursor: pointer;
+}
+
+.form-select:hover {
+    background-color: #f2f4f5 !important;
 }

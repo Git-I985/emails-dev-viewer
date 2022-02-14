@@ -7,7 +7,7 @@ const app = Vue.createApp({
             subject: null,
             langs: [],
             pages: [],
-            defaultResolutions: [661, 480, 380],
+            defaultResolutions: [660, 480, 380],
             copied: false,
             filters: {
                 all: () => true,
@@ -16,31 +16,53 @@ const app = Vue.createApp({
             stickyControlPanel: JSON.parse(localStorage.getItem('stickyControlPanel')) || false,
             oneResolution: JSON.parse(localStorage.getItem('oneResolution')) || false,
             darkTheme: JSON.parse(localStorage.getItem('darkTheme')) || false,
+            iframeLinks: [],
         };
     },
     created() {
         this.fetchEmails();
         window.addEventListener('keydown', (e) => {
             const { key } = e;
-
-            if (document.activeElement.classList.contains('form-select') || !['ArrowUp', 'ArrowDown'].includes(key)) {
+            // console.log(key);
+            // console.log(Object.keys(this.langs).indexOf(this.lang));
+            if (
+                document.activeElement.classList.contains('form-select') ||
+                !['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)
+            ) {
                 return false;
             }
 
             e.preventDefault();
 
-            const pages = this.pages.filter(this.filters[this.selectedFilter]);
-            const currentPageIndex = pages.indexOf(this.page);
-            const newPageIndex = key === 'ArrowUp' ? currentPageIndex - 1 : currentPageIndex + 1;
-            if (newPageIndex >= 0 && newPageIndex < pages.length) {
-                this.page = pages[newPageIndex];
+            if (['ArrowUp', 'ArrowDown'].includes(key)) {
+                const pages = this.pages.filter(this.filters[this.selectedFilter]);
+                const currentPageIndex = pages.indexOf(this.page);
+                const newPageIndex = key === 'ArrowUp' ? currentPageIndex - 1 : currentPageIndex + 1;
+                if (newPageIndex >= 0 && newPageIndex < pages.length) {
+                    this.page = pages[newPageIndex];
+                }
+                return;
+            }
+
+            if (['ArrowLeft', 'ArrowRight'].includes(key)) {
+                const currentLangIndex = Object.keys(this.langs).indexOf(this.lang);
+                const newLangIndex = key === 'ArrowLeft' ? currentLangIndex - 1 : currentLangIndex + 1;
+                if (newLangIndex >= 0 && newLangIndex < Object.keys(this.langs).length) {
+                    this.lang = Object.keys(this.langs)[newLangIndex];
+                }
             }
         });
     },
     beforeUpdate() {
         this.updateTitle();
         this.updateSubject();
-        // this.updateIframeHeight();
+        document.querySelectorAll('iframe').forEach((iframe) => {
+            // this.iframeLinks = Array.from(iframe.contentDocument.querySelectorAll('a')).map((link) => ({
+            //     url: link.href,
+            //     test: 'БЛЯЯЯЯТЬ ДА ЧТО БЛЯтЬТТТЬ ТАКОЕ ТО НАХУЙ',
+            //     text: link.innerText,
+            // }));
+        });
         document.documentElement.className = this.darkTheme ? 'darkTheme' : '';
         this.copied = false;
     },
@@ -73,6 +95,9 @@ const app = Vue.createApp({
         },
     },
     methods: {
+        getformattedLink(link) {
+            console.log('link');
+        },
         getUrl(type) {
             return {
                 template: `./${this.lang}/${this.page}.html`,
@@ -80,7 +105,7 @@ const app = Vue.createApp({
             }[type];
         },
         updateTitle() {
-            const text = this.langs[this.lang] + ' - ' + this.page;
+            const text = this.lang + ' - ' + this.page;
             document.querySelector('title').innerText = text;
         },
         copyEmailHtmlToClipboard() {
@@ -103,12 +128,19 @@ const app = Vue.createApp({
                     this.subject = subject;
                 });
         },
-        updateIframeHeight() {
-            // document.querySelectorAll('iframe').forEach((iframe) => {
-            //     iframe.onload = function () {
-            //         this.style.height = this.contentDocument.body.scrollHeight + 'px';
-            //     };
-            // });
+        rerenderEmails() {
+            document.body.classList.add('loading');
+            const command = 'java -jar pebble.jar render src -';
+            fetch(`/execute/${encodeURIComponent(command)}`)
+                .then((data) => {
+                    if (data.status === 200) {
+                        return this.fetchEmails();
+                    }
+                    alert('Ошибка обновления писем на сервере, проверьте логи или попытайтесь вручную');
+                })
+                .then(() => {
+                    document.body.classList.remove('loading');
+                });
         },
         fetchEmails() {
             this.fetchingEmails = true;
@@ -125,8 +157,11 @@ const app = Vue.createApp({
                             pageName.includes(emails.project === 'PRIME' ? 'did-you-know' : 'marketing'),
                         service: (pageName) => !this.filters.marketing(pageName),
                     };
-
                     this.selectedFilter = localStorage.getItem('selectedFilter') || Object.keys(this.filters).shift();
+
+                    document.querySelectorAll('iframe').forEach((iframe) => {
+                        iframe.contentWindow.location.reload();
+                    });
 
                     const self = this;
                     setTimeout(() => {
