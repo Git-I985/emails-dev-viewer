@@ -2,6 +2,8 @@ pipelines:
   default:
     - step:
         script:
-          - docker build . -t email-viewer
+          - eval $(aws ecr get-login --no-include-email --region eu-west-2)
+          - docker build -t 197921004883.dkr.ecr.eu-west-2.amazonaws.com/prime-email-viewer:${BITBUCKET_BUILD_NUMBER} -t 197921004883.dkr.ecr.eu-west-2.amazonaws.com/prime-email-viewer:latest .
+          - docker push 197921004883.dkr.ecr.eu-west-2.amazonaws.com/prime-email-viewer --all-tags
         services:
           - docker
