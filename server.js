@@ -8,7 +8,7 @@ import { exec } from 'child_process';
 
 const app = express();
 
-app.use(express.static('/public'));
+app.use(express.static('./public'));
 app.use(express.static(config.path.emails));
 
 /**
