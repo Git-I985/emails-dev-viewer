@@ -144,7 +144,7 @@ const app = Vue.createApp({
         },
         fetchEmails() {
             this.fetchingEmails = true;
-            return fetch('/emails')
+            return fetch('./emails/')
                 .then((emails) => emails.json())
                 .then((emails) => {
                     this.langs = emails.langs;
