@@ -11,7 +11,7 @@ export const config = {
             // тут надо просто путь указать, можно абсолютный, можно относительный
             // как тут, тут например путь ../prime-email-templates/dist собирается
             // можно заменить на return './dist' и все
-            return join(this.emailsProject, 'dist');
+            return process.env.EMAILS_DIST_DIR || join(this.emailsProject, 'dist');
         },
         get public() {
             return join(this.currentDir, 'public');

@@ -8,7 +8,7 @@ import { exec } from 'child_process';
 
 const app = express();
 
-app.use(express.static(config.path.public));
+app.use(express.static('/public'));
 app.use(express.static(config.path.emails));
 
 /**
@@ -43,29 +43,29 @@ app.get('/emails', async (req, res) => {
         });
 });
 
-app.get('/execute/:command', (req, res) => {
-    exec(req.params.command, { cwd: config.path.emailsProject }, (error, stdout, stderr) => {
-        if (stderr || error) {
-            let errorText;
-            stdout && (errorText += stdout);
-            error && (errorText += error);
-
-            console.log('[ERROR]: exectuting command via /execute/command ❌ ');
-            console.log('[COMMAND]: ' + req.params.command);
-            console.log('[ERROR DETAILS]:');
-            console.group();
-            console.group();
-            console.log(errorText);
-            console.groupEnd();
-            console.groupEnd();
-
-            res.status(500).send(errorText);
-        } else {
-            console.log('[LOG]: Executing command success ' + req.params.command);
-            res.status(200).send(stdout);
-        }
-    });
-});
+// app.get('/execute/:command', (req, res) => {
+//     exec(req.params.command, { cwd: config.path.emailsProject }, (error, stdout, stderr) => {
+//         if (stderr || error) {
+//             let errorText;
+//             stdout && (errorText += stdout);
+//             error && (errorText += error);
+//
+//             console.log('[ERROR]: exectuting command via /execute/command ❌ ');
+//             console.log('[COMMAND]: ' + req.params.command);
+//             console.log('[ERROR DETAILS]:');
+//             console.group();
+//             console.group();
+//             console.log(errorText);
+//             console.groupEnd();
+//             console.groupEnd();
+//
+//             res.status(500).send(errorText);
+//         } else {
+//             console.log('[LOG]: Executing command success ' + req.params.command);
+//             res.status(200).send(stdout);
+//         }
+//     });
+// });
 
 app.listen(config.server.port, () => {
     console.log(`[PORT:${config.server.port}]: Emails server started... http://localhost:${config.server.port} ✅`);
