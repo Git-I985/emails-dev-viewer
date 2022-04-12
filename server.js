@@ -4,7 +4,7 @@ import { promises } from 'fs';
 import { config } from './config.js';
 import chalk from 'chalk';
 import { langs } from './langs.js';
-import { exec } from 'child_process';
+// import { exec } from 'child_process';
 
 const app = express();
 
@@ -19,7 +19,7 @@ app.use(express.static(config.path.emails));
  *     "project": "PRIME" or "TURBO"
  * }
  */
-app.get('/emails', async (req, res) => {
+app.get('/email-viewer/emails', async (req, res) => {
     promises
         /** scan compiled emails directory */
         .readdir(join(config.path.emails, 'en'))
