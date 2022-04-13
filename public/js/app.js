@@ -95,9 +95,6 @@ const app = Vue.createApp({
         },
     },
     methods: {
-        getformattedLink(link) {
-            console.log('link');
-        },
         getUrl(type) {
             return {
                 template: `./${this.lang}/${this.page}.html`,
@@ -129,18 +126,18 @@ const app = Vue.createApp({
                 });
         },
         rerenderEmails() {
-            document.body.classList.add('loading');
-            const command = 'java -jar pebble.jar render src -';
-            fetch(`/execute/${encodeURIComponent(command)}`)
-                .then((data) => {
-                    if (data.status === 200) {
-                        return this.fetchEmails();
-                    }
-                    alert('Ошибка обновления писем на сервере, проверьте логи или попытайтесь вручную');
-                })
-                .then(() => {
-                    document.body.classList.remove('loading');
-                });
+            // document.body.classList.add('loading');
+            // const command = 'java -jar pebble.jar render src -';
+            // fetch(`/execute/${encodeURIComponent(command)}`)
+            //     .then((data) => {
+            //         if (data.status === 200) {
+            //             return this.fetchEmails();
+            //         }
+            //         alert('Ошибка обновления писем на сервере, проверьте логи или попытайтесь вручную');
+            //     })
+            //     .then(() => {
+            //         document.body.classList.remove('loading');
+            //     });
         },
         fetchEmails() {
             this.fetchingEmails = true;
