@@ -7,7 +7,7 @@ import { langs } from './langs.js';
 
 const app = express();
 
-app.use(express.static(join(config.path.currentDir,'public')));
+app.use(config.path.baseUrl, express.static(join(config.path.currentDir,'public')));
 app.use(express.static(config.path.emails));
 
 /**
