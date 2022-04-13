@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 export const config = {
     path: {
         currentDir: dirname(fileURLToPath(import.meta.url)),
+        baseUrl: process.env.BASE_URL || '/',
         get emailsProject() {
             return join(this.currentDir, '..', 'prime-email-templates');
         },

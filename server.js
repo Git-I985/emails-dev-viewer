@@ -19,7 +19,7 @@ app.use(express.static(config.path.emails));
  *     "project": "PRIME" or "TURBO"
  * }
  */
-app.get('/email-viewer/emails', async (req, res) => {
+app.get(join(config.path.baseUrl + '/emails'), async (req, res) => {
     promises
         /** scan compiled emails directory */
         .readdir(join(config.path.emails, 'en'))
