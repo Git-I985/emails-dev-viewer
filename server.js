@@ -21,7 +21,7 @@ app.use(express.static(config.path.emails));
 app.get(join(config.path.baseUrl, 'emails'), async (req, res) => {
     promises
         /** scan compiled emails directory */
-        .readdir(join(config.path.currentDir, config.path.emails, 'en'))
+        .readdir(join(config.path.currentDir, config.path.emails, 'es'))
         /** removes subject files */
         .then((pages) => pages.filter((file) => !parse(file).name.includes('subject')))
         /** removes files extension */
