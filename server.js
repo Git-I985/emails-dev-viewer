@@ -1,13 +1,13 @@
 import express from 'express';
-import { join, parse } from 'path';
-import { promises } from 'fs';
-import { config } from './config.js';
+import {join, parse} from 'path';
+import {promises} from 'fs';
+import {config} from './config.js';
 import chalk from 'chalk';
-import { langs } from './langs.js';
+import {langs} from './langs.js';
 
 const app = express();
 
-app.use(config.path.baseUrl, express.static(join(config.path.currentDir,'public')));
+app.use(config.path.baseUrl, express.static(join(config.path.currentDir, 'public')));
 app.use(express.static(config.path.emails));
 
 /**
@@ -18,10 +18,10 @@ app.use(express.static(config.path.emails));
  *     "project": "PRIME" or "TURBO"
  * }
  */
-app.get(join(config.path.baseUrl,  'emails'), async (req, res) => {
+app.get(join(config.path.baseUrl, 'emails'), async (req, res) => {
     promises
         /** scan compiled emails directory */
-        .readdir(join(config.path.emails, 'en'))
+        .readdir(join(config.path.currentDir, config.path.emails, 'en'))
         /** removes subject files */
         .then((pages) => pages.filter((file) => !parse(file).name.includes('subject')))
         /** removes files extension */
@@ -32,8 +32,8 @@ app.get(join(config.path.baseUrl,  'emails'), async (req, res) => {
                 pages,
                 langs,
                 project: pages.some((page) => page.includes('cov') || page.includes('did-you-know'))
-                    ? 'PRIME'
-                    : 'TURBO',
+                         ? 'PRIME'
+                         : 'TURBO',
             })
         )
         .catch((e) => {
