@@ -36,9 +36,9 @@ app.get(join(config.path.baseUrl,  'emails'), async (req, res) => {
                     : 'TURBO',
             })
         )
-        .catch(() => {
+        .catch((e) => {
             console.log(chalk.bgRedBright.whiteBright(` ERROR `) + ' ' + config.cli.messages.error);
-            res.sendStatus(500);
+            res.status(500).send(e);
         });
 });
 
