@@ -7,8 +7,16 @@ import {langs} from './langs.js';
 
 const app = express();
 
-app.use(config.path.baseUrl, express.static(join(config.path.currentDir, 'public')));
-app.use(express.static(config.path.emails));
+const headers = (res) => {
+    // res.set('Content-Security-Policy', `default-src *`)
+}
+
+app.use(config.path.baseUrl, express.static(join(config.path.currentDir, 'public'), {
+    setHeaders: headers
+}));
+app.use(express.static(config.path.emails, {
+    setHeaders: headers
+}));
 
 /**
  * JSON response schema:
@@ -21,7 +29,7 @@ app.use(express.static(config.path.emails));
 app.get(join(config.path.baseUrl, 'emails'), async (req, res) => {
     promises
         /** scan compiled emails directory */
-        .readdir(join(config.path.currentDir, config.path.emails, 'es'))
+        .readdir(join(config.path.emails, 'es'))
         /** removes subject files */
         .then((pages) => pages.filter((file) => !parse(file).name.includes('subject')))
         /** removes files extension */

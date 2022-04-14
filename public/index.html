@@ -7,6 +7,14 @@
             content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
         />
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <meta name="Content-Security-Policy" content="default-src *  data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval' 'unsafe-dynamic';
+                                                     script-src * 'unsafe-inline' 'unsafe-eval';
+                                                     connect-src * 'unsafe-inline' 'unsafe-eval';
+                                                     img-src * data: blob: 'unsafe-inline' 'unsafe-eval';
+                                                     frame-src * 'unsafe-inline' 'unsafe-eval';
+                                                     style-src * 'unsafe-inline' 'unsafe-eval';
+                                                     font-src: * 'unsafe-inline' 'unsafe-eval';
+                                                     frame-ancestors * data: blob: 'unsafe-inline' 'unsafe-eval';">
         <title></title>
         <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"

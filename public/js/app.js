@@ -56,13 +56,6 @@ const app = Vue.createApp({
     beforeUpdate() {
         this.updateTitle();
         this.updateSubject();
-        document.querySelectorAll('iframe').forEach((iframe) => {
-            // this.iframeLinks = Array.from(iframe.contentDocument.querySelectorAll('a')).map((link) => ({
-            //     url: link.href,
-            //     test: 'БЛЯЯЯЯТЬ ДА ЧТО БЛЯтЬТТТЬ ТАКОЕ ТО НАХУЙ',
-            //     text: link.innerText,
-            // }));
-        });
         document.documentElement.className = this.darkTheme ? 'darkTheme' : '';
         this.copied = false;
     },
@@ -96,10 +89,11 @@ const app = Vue.createApp({
     },
     methods: {
         getUrl(type) {
-            return {
+            const url = {
                 template: `./${this.lang}/${this.page}.html`,
                 subject: `./${this.lang}/${this.page}_subject.html`,
             }[type];
+            return url
         },
         updateTitle() {
             const text = this.lang + ' - ' + this.page;
@@ -147,7 +141,6 @@ const app = Vue.createApp({
                     this.langs = emails.langs;
                     this.pages = emails.pages;
                     this.page = localStorage.getItem('selectedPage') || this.pages[0];
-
                     this.filters = {
                         all: () => true,
                         marketing: (pageName) =>
@@ -160,10 +153,10 @@ const app = Vue.createApp({
                         iframe.contentWindow.location.reload();
                     });
 
-                    const self = this;
-                    setTimeout(() => {
-                        self.fetchingEmails = false;
-                    }, 1000);
+                    // const self = this;
+                    // setTimeout(() => {
+                    //     self.fetchingEmails = false;
+                    // }, 1000);
                 });
         },
     },
