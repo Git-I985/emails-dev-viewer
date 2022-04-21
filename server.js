@@ -1,5 +1,5 @@
 import express from 'express';
-import {join, parse} from 'path';
+import {join, pars, normalize} from 'path';
 import {readdir, lstat} from 'fs/promises';
 import {config} from './config.js';
 import chalk from 'chalk';
@@ -22,7 +22,7 @@ const readDirRecursive = async (dirPath) => await Promise.all(
 app.use(config.path.baseUrl, express.static(join(config.path.currentDir, 'public'), {
     setHeaders: headers
 }));
-app.use(express.static(config.path.emails, {
+app.use(express.static(normalize(config.path.emails), {
     setHeaders: headers
 }));
 
