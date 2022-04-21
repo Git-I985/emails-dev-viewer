@@ -1,6 +1,6 @@
 import express from 'express';
 import {join, parse} from 'path';
-import {promises} from 'fs';
+import {readdir, lstat} from 'fs/promises';
 import {config} from './config.js';
 import chalk from 'chalk';
 import {langs} from './langs.js';
@@ -10,6 +10,13 @@ const app = express();
 const headers = (res) => {
     // res.set('Content-Security-Policy', `default-src *`)
 }
+
+const readDirRecursive = async (dirPath) => await Promise.all(
+    (await readdir(dirPath)).map(async (entity) => {
+        const path = join(dirPath, entity)
+        return (await lstat(path)).isDirectory() ? await readDirRecursive(path) : path
+    })
+)
 
 app.use(config.path.baseUrl, express.static(join(config.path.currentDir, 'public'), {
     setHeaders: headers
@@ -27,9 +34,8 @@ app.use(express.static(config.path.emails, {
  * }
  */
 app.get(join(config.path.baseUrl, 'emails'), async (req, res) => {
-    promises
-        /** scan compiled emails directory */
-        .readdir(join(config.path.emails, 'es'))
+    /** scan compiled emails directory */
+    readdir(join(config.path.emails, 'es'))
         /** removes subject files */
         .then((pages) => pages.filter((file) => !parse(file).name.includes('subject')))
         /** removes files extension */
@@ -49,6 +55,17 @@ app.get(join(config.path.baseUrl, 'emails'), async (req, res) => {
             res.status(500).send(e);
         });
 });
+
+
+app.get(join(config.path.baseUrl, 'ls'), async (req, res) => {
+    readDirRecursive('/usr/src/app')
+        .then(dirs => dirs.flat(Number.POSITIVE_INFINITY))
+        .then(dirs => {
+            res.json(dirs)
+        }).catch(e => {
+        res.status(500).send(e)
+    })
+})
 
 // app.get('/execute/:command', (req, res) => {
 //     exec(req.params.command, { cwd: config.path.emailsProject }, (error, stdout, stderr) => {
