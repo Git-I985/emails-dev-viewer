@@ -22,7 +22,8 @@ const readDirRecursive = async (dirPath) => await Promise.all(
 app.use(config.path.baseUrl, express.static(join(config.path.currentDir, 'public'), {
     setHeaders: headers
 }));
-app.use(express.static(normalize(config.path.emails), {
+
+app.use(config.path.baseUrl, express.static(config.path.emails, {
     setHeaders: headers
 }));
 
