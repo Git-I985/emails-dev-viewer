@@ -1,5 +1,5 @@
 import express from 'express';
-import {join, pars, normalize} from 'path';
+import {join, parse, normalize} from 'path';
 import {readdir, lstat} from 'fs/promises';
 import {config} from './config.js';
 import chalk from 'chalk';
