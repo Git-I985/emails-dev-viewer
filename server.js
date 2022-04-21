@@ -13,7 +13,7 @@ const headers = (res) => {
 
 
 const readDirRecursive = async (dirPath, options) => await Promise.all(
-    (await readdir(dirPath)).filter(dir => !options.exclude.includes(dir)).map(async (entity) => {
+    (await readdir(dirPath)).filter(dir => !options.exclude.find(excludedDir => excludedDir.includes(dir))).map(async (entity) => {
         const path = join(dirPath, entity)
         return (await lstat(path)).isDirectory() ? await readDirRecursive(path) : path
     })
