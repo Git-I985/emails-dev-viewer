@@ -11,8 +11,9 @@ const headers = (res) => {
     // res.set('Content-Security-Policy', `default-src *`)
 }
 
-const readDirRecursive = async (dirPath) => await Promise.all(
-    (await readdir(dirPath)).map(async (entity) => {
+
+const readDirRecursive = async (dirPath, options) => await Promise.all(
+    (await readdir(dirPath)).filter(dir => !options.exclude.includes(dir)).map(async (entity) => {
         const path = join(dirPath, entity)
         return (await lstat(path)).isDirectory() ? await readDirRecursive(path) : path
     })
@@ -58,10 +59,11 @@ app.get(join(config.path.baseUrl, 'emails'), async (req, res) => {
 
 
 app.get(join(config.path.baseUrl, 'ls'), async (req, res) => {
-    readDirRecursive('/usr/src/app')
+    const root = req?.query?.path || '/usr/src/app';
+    readDirRecursive(root, {exclude: ['node_modules', '.git']})
         .then(dirs => dirs.flat(Number.POSITIVE_INFINITY))
         .then(dirs => {
-            res.json(dirs)
+            res.json({[root]: dirs})
         }).catch(e => {
         res.status(500).send(e)
     })
