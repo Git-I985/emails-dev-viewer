@@ -12,8 +12,8 @@ const headers = (res) => {
 }
 
 
-const readDirRecursive = async (dirPath, options) => await Promise.all(
-    (await readdir(dirPath)).filter(dir => !options.exclude.find(excludedDir => dir.includes(excludedDir))).map(async (entity) => {
+const readDirRecursive = async (dirPath) => await Promise.all(
+    (await readdir(dirPath)).map(async (entity) => {
         const path = join(dirPath, entity)
         return (await lstat(path)).isDirectory() ? await readDirRecursive(path) : path
     })
@@ -59,11 +59,10 @@ app.get(join(config.path.baseUrl, 'emails'), async (req, res) => {
 
 
 app.get(join(config.path.baseUrl, 'ls'), async (req, res) => {
-    const root = req?.query?.path || '/usr/src/app';
-    readDirRecursive(root, {exclude: ['node_modules', '.git']})
+    readDirRecursive('/usr/src/app')
         .then(dirs => dirs.flat(Number.POSITIVE_INFINITY))
         .then(dirs => {
-            res.json({[root]: dirs})
+            res.json(dirs)
         }).catch(e => {
         res.status(500).send(e)
     })
