@@ -1,41 +1,24 @@
 import express from 'express';
-import {join, parse, normalize} from 'path';
+import {join, parse} from 'path';
 import {readdir, lstat} from 'fs/promises';
 import {config} from './config.js';
 import chalk from 'chalk';
 import {langs} from './langs.js';
 
 const app = express();
+const router = express.Router()
 
-const headers = (res) => {
-    // res.set('Content-Security-Policy', `default-src *`)
-}
+// const readDirRecursive = async (dirPath, options) => await Promise.all(
+//     (await readdir(dirPath)).filter(dir => !options.exclude.find(excludedDir => dir.includes(excludedDir))).map(async (entity) => {
+//         const path = join(dirPath, entity)
+//         return (await lstat(path)).isDirectory() ? await readDirRecursive(path) : path
+//     })
+// )
 
+router.use(express.static(config.path.emails));
+router.use(express.static(config.path.public));
 
-const readDirRecursive = async (dirPath) => await Promise.all(
-    (await readdir(dirPath)).map(async (entity) => {
-        const path = join(dirPath, entity)
-        return (await lstat(path)).isDirectory() ? await readDirRecursive(path) : path
-    })
-)
-
-app.use(config.path.baseUrl, express.static(join(config.path.currentDir, 'public'), {
-    setHeaders: headers
-}));
-
-app.use(config.path.baseUrl, express.static(config.path.emails, {
-    setHeaders: headers
-}));
-
-/**
- * JSON response schema:
- * {
- *     "pages": ['account-restored', 'did-you-know-1',...] array of compiled email file names,
- *     "langs": { ru: Russian, bn: Bengali,...} map of lang codes,
- *     "project": "PRIME" or "TURBO"
- * }
- */
-app.get(join(config.path.baseUrl, 'emails'), async (req, res) => {
+router.get('/emails', async (req, res) => {
     /** scan compiled emails directory */
     readdir(join(config.path.emails, 'es'))
         /** removes subject files */
@@ -58,16 +41,16 @@ app.get(join(config.path.baseUrl, 'emails'), async (req, res) => {
         });
 });
 
-
-app.get(join(config.path.baseUrl, 'ls'), async (req, res) => {
-    readDirRecursive('/usr/src/app')
-        .then(dirs => dirs.flat(Number.POSITIVE_INFINITY))
-        .then(dirs => {
-            res.json(dirs)
-        }).catch(e => {
-        res.status(500).send(e)
-    })
-})
+// app.get(join(config.path.baseUrl, 'ls'), async (req, res) => {
+//     const root = req?.query?.path || '/usr/src/app';
+//     readDirRecursive(root, {exclude: ['node_modules', '.git']})
+//         .then(dirs => dirs.flat(Number.POSITIVE_INFINITY))
+//         .then(dirs => {
+//             res.json({[root]: dirs})
+//         }).catch(e => {
+//         res.status(500).send(e)
+//     })
+// })
 
 // app.get('/execute/:command', (req, res) => {
 //     exec(req.params.command, { cwd: config.path.emailsProject }, (error, stdout, stderr) => {
@@ -93,6 +76,9 @@ app.get(join(config.path.baseUrl, 'ls'), async (req, res) => {
 //     });
 // });
 
+app.use(config.path.baseUrl, router);
+
+
 app.listen(config.server.port, () => {
-    console.log(`[PORT:${config.server.port}]: Emails server started... http://localhost:${config.server.port} ✅`);
+    console.log(`[PORT:${config.server.port}]: Emails server started... http://localhost:${config.server.port}✅`);
 });

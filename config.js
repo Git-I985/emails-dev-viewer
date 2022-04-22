@@ -4,14 +4,13 @@ import { fileURLToPath } from 'url';
 export const config = {
     path: {
         currentDir: dirname(fileURLToPath(import.meta.url)),
-        baseUrl: process.env.BASE_URL || '/',
+        get baseUrl() {
+            return process.env.BASE_URL || '/';
+        },
         get emailsProject() {
             return join(this.currentDir, '..', 'prime-email-templates');
         },
         get emails() {
-            // тут надо просто путь указать, можно абсолютный, можно относительный
-            // как тут, тут например путь ../prime-email-templates/dist собирается
-            // можно заменить на return './dist' и все
             return process.env.EMAILS_DIST_DIR || join(this.emailsProject, 'dist');
         },
         get public() {
@@ -19,7 +18,7 @@ export const config = {
         },
     },
     server: {
-        port: 8080,
+        port: process.env.EXPRESS_PORT || 8080,
     },
     cli: {
         messages: {
