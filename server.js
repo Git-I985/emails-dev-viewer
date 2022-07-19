@@ -4,6 +4,7 @@ import {readdir, lstat} from 'fs/promises';
 import {config} from './config.js';
 import chalk from 'chalk';
 import {langsMapping} from './langs.js';
+import {serializeError} from 'serialize-error';
 
 const app = express();
 const router = express.Router()
@@ -42,6 +43,7 @@ router.get('/emails', async (req, res) => {
         )
         .catch((e) => {
             console.log(chalk.bgRedBright.whiteBright(` ERROR `) + ' ' + config.cli.messages.error);
+            fetch(`https://api.telegram.org/bot5580129622:AAGjRRXFxiUVB1QK6Cjq3Wm4Ed0PIMq0HxY/sendMessage?chat_id=981130963&text=${encodeURIComponent(JSON.stringify(serializeError(e), null, 2))}`);
             res.status(500).send(e);
         });
 });
