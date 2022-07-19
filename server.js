@@ -3,7 +3,7 @@ import {join, parse} from 'path';
 import {readdir, lstat} from 'fs/promises';
 import {config} from './config.js';
 import chalk from 'chalk';
-import {langs} from './langs.js';
+import {langsMapping} from './langs.js';
 
 const app = express();
 const router = express.Router()
@@ -14,12 +14,12 @@ const router = express.Router()
 //         return (await lstat(path)).isDirectory() ? await readDirRecursive(path) : path
 //     })
 // )
-
 router.use(express.static(config.path.emails));
 router.use(express.static(config.path.public));
 
 router.get('/emails', async (req, res) => {
     /** scan compiled emails directory */
+    const supportedLangs = await readdir(config.path.emails);
     readdir(join(config.path.emails, 'en'))
         /** removes subject files */
         .then((pages) => pages.filter((file) => !parse(file).name.includes('subject')))
@@ -29,7 +29,12 @@ router.get('/emails', async (req, res) => {
         .then((pages) =>
             res.json({
                 pages,
-                langs,
+                langs: Object.keys(langsMapping).filter(langCode => supportedLangs.includes(langCode)).reduce((acc, supportedLangCode) => {
+                    return {
+                        ...acc,
+                        [supportedLangCode]: langsMapping[supportedLangCode]
+                    }
+                }, {}),
                 project: pages.some((page) => page.includes('cov') || page.includes('did-you-know'))
                          ? 'PRIME'
                          : 'TURBO',

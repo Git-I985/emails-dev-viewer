@@ -3,10 +3,10 @@ const app = Vue.createApp({
         return {
             page: null,
             fetchingEmails: false,
-            lang: localStorage.getItem('selectedLang') || 'en',
             subject: null,
             langs: [],
             pages: [],
+            lang: localStorage.getItem('selectedLang') || 'en',
             defaultResolutions: [660, 480, 380],
             copied: false,
             filters: {
@@ -58,6 +58,7 @@ const app = Vue.createApp({
         this.updateSubject();
         document.documentElement.className = this.darkTheme ? 'darkTheme' : '';
         this.copied = false;
+        window.location.hash = encodeURIComponent(JSON.stringify({page: this.page, lang: this.lang}))
     },
     computed: {
         filteredPages() {
@@ -79,6 +80,9 @@ const app = Vue.createApp({
         },
         page(newPage) {
             localStorage.setItem('selectedPage', newPage);
+        },
+        lang(newLang) {
+            localStorage.setItem('selectedLang', newLang);
         },
         oneResolution(value) {
             localStorage.setItem('oneResolution', value);
@@ -138,9 +142,14 @@ const app = Vue.createApp({
             return fetch('./emails/')
                 .then((emails) => emails.json())
                 .then((emails) => {
+                    let urlParams;
+                    try {
+                        urlParams = JSON.parse(decodeURIComponent(window.location.hash.replace('#', '')) )
+                    } catch (e) {
+                    }
                     this.langs = emails.langs;
                     this.pages = emails.pages;
-                    this.page = localStorage.getItem('selectedPage') || this.pages[0];
+                    this.page = emails.pages.find(email => email === urlParams?.page) || localStorage.getItem('selectedPage') || this.pages[0];
                     this.filters = {
                         all: () => true,
                         marketing: (pageName) =>
