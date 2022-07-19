@@ -20,7 +20,7 @@ router.use(express.static(config.path.public));
 
 router.get('/emails', async (req, res) => {
     /** scan compiled emails directory */
-    readdir(join(config.path.emails, 'es'))
+    readdir(join(config.path.emails, 'en'))
         /** removes subject files */
         .then((pages) => pages.filter((file) => !parse(file).name.includes('subject')))
         /** removes files extension */
