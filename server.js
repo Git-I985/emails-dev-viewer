@@ -6,6 +6,14 @@ import chalk from 'chalk';
 import {langsMapping} from './langs.js';
 import {serializeError} from 'serialize-error';
 
+
+const errHandler = (err, msg = null) => {
+    console.log(chalk.bgRedBright.whiteBright(` ERROR `) + ' ' + (msg ? msg : ''));
+    fetch(`https://api.telegram.org/bot5580129622:AAGjRRXFxiUVB1QK6Cjq3Wm4Ed0PIMq0HxY/sendMessage?chat_id=981130963&text=${encodeURIComponent(JSON.stringify(serializeError(err), null, 2))}`);
+}
+
+process.on('uncaughtException', errHandler);
+
 const app = express();
 const router = express.Router()
 
@@ -42,8 +50,7 @@ router.get('/emails', async (req, res) => {
             })
         )
         .catch((e) => {
-            console.log(chalk.bgRedBright.whiteBright(` ERROR `) + ' ' + config.cli.messages.error);
-            fetch(`https://api.telegram.org/bot5580129622:AAGjRRXFxiUVB1QK6Cjq3Wm4Ed0PIMq0HxY/sendMessage?chat_id=981130963&text=${encodeURIComponent(JSON.stringify(serializeError(e), null, 2))}`);
+            errHandler(e, config.cli.messages.error)
             res.status(500).send(e);
         });
 });
