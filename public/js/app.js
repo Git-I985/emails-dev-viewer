@@ -157,11 +157,6 @@ const app = Vue.createApp({
                         service: (pageName) => !this.filters.marketing(pageName),
                     };
                     this.selectedFilter = localStorage.getItem('selectedFilter') || Object.keys(this.filters).shift();
-
-                    document.querySelectorAll('iframe').forEach((iframe) => {
-                        iframe.contentWindow.location.reload();
-                    });
-
                     // const self = this;
                     // setTimeout(() => {
                     //     self.fetchingEmails = false;
