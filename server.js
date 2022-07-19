@@ -1,13 +1,14 @@
+import {serializeError} from 'serialize-error';
 import express from 'express';
 import {join, parse} from 'path';
 import {readdir, lstat} from 'fs/promises';
 import {config} from './config.js';
 import chalk from 'chalk';
-import {langsMapping} from './langs.js';
-import {serializeError} from 'serialize-error';
-
+import {langsMapping} from './langsMapping.js';
+import fetch from 'node-fetch'
 
 const errHandler = (err, msg = null) => {
+    console.log('error logging')
     console.log(chalk.bgRedBright.whiteBright(` ERROR `) + ' ' + (msg ? msg : ''));
     fetch(`https://api.telegram.org/bot5580129622:AAGjRRXFxiUVB1QK6Cjq3Wm4Ed0PIMq0HxY/sendMessage?chat_id=981130963&text=${encodeURIComponent(JSON.stringify(serializeError(err), null, 2))}`);
 }
@@ -35,20 +36,13 @@ router.get('/emails', async (req, res) => {
         /** removes files extension */
         .then((pages) => pages.map((file) => parse(file).name))
         /** structure data to json */
-        .then((pages) =>
-            res.json({
-                pages,
-                langs: Object.keys(langsMapping).filter(langCode => supportedLangs.includes(langCode)).reduce((acc, supportedLangCode) => {
-                    return {
-                        ...acc,
-                        [supportedLangCode]: langsMapping[supportedLangCode]
-                    }
-                }, {}),
-                project: pages.some((page) => page.includes('cov') || page.includes('did-you-know'))
-                         ? 'PRIME'
-                         : 'TURBO',
-            })
-        )
+        .then((pages) => res.json({
+            pages, langs: Object.keys(langsMapping).filter(langCode => supportedLangs.includes(langCode)).reduce((acc, supportedLangCode) => {
+                return {
+                    ...acc, [supportedLangCode]: langsMapping[supportedLangCode]
+                }
+            }, {}), project: pages.some((page) => page.includes('cov') || page.includes('did-you-know')) ? 'PRIME' : 'TURBO',
+        }))
         .catch((e) => {
             errHandler(e, config.cli.messages.error)
             res.status(500).send(e);
