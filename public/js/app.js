@@ -155,6 +155,9 @@ const app = Vue.createApp({
                         marketing: (pageName) =>
                             pageName.includes(emails.project === 'PRIME' ? 'did-you-know' : 'marketing'),
                         service: (pageName) => !this.filters.marketing(pageName),
+                        covesting: (pageName) => pageName.includes('cov'),
+                        ['sign up/in']: (pageName) => pageName.includes('sign'),
+                        password: (pageName) => pageName.includes('password'),
                     };
                     this.selectedFilter = localStorage.getItem('selectedFilter') || Object.keys(this.filters).shift();
                     // const self = this;

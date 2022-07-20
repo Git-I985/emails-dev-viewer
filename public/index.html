@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta
+<head>
+    <meta charset="UTF-8"/>
+    <meta
             name="viewport"
             content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
-        />
-        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-        <meta name="Content-Security-Policy" content="default-src *  data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval' 'unsafe-dynamic';
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <meta name="Content-Security-Policy" content="default-src *  data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval' 'unsafe-dynamic';
                                                      script-src * 'unsafe-inline' 'unsafe-eval';
                                                      connect-src * 'unsafe-inline' 'unsafe-eval';
                                                      img-src * data: blob: 'unsafe-inline' 'unsafe-eval';
@@ -15,195 +15,216 @@
                                                      style-src * 'unsafe-inline' 'unsafe-eval';
                                                      font-src: * 'unsafe-inline' 'unsafe-eval';
                                                      frame-ancestors * data: blob: 'unsafe-inline' 'unsafe-eval';">
-        <title></title>
-        <link
+    <title></title>
+    <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
             rel="stylesheet"
             integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We"
             crossorigin="anonymous"
-        />
-        <link
+    />
+    <link
             rel="stylesheet"
             href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
             integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm"
             crossorigin="anonymous"
-        />
-        <link rel="stylesheet" href="./css/main.css" />
-        <link rel="stylesheet" href="./css/tooltip.css" />
-        <!--  Favicon  -->
-        <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png" />
-        <link rel="manifest" href="./favicon/site.webmanifest" />
-    </head>
-    <body class="bg-light">
-        <div id="app">
-            <div class="mb-5 mx-3 controls-panel" :class="{'sticky-top': stickyControlPanel}">
-                <div class="px-5 py-4 mt-5 shadow rounded-3 bg-white">
-                    <div class="d-flex flex-wrap justify-content-between mb-3 border p-3 rounded-3 bg-light">
-                        <div class="d-flex flex-wrap">
-                            <div class="form-check form-switch form-check-inline form-control-lg">
-                                <input
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    id="flexCheckChecked"
-                                    v-model="stickyControlPanel"
-                                    tabindex="-1"
-                                />
-                                <label class="form-check-label" for="flexCheckChecked" style="cursor: pointer"
-                                    >Pin on top</label
-                                >
-                            </div>
-                            <div class="form-check form-switch form-check-inline form-control-lg">
-                                <input
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    id="oneResolutionCheckbox"
-                                    v-model="oneResolution"
-                                    tabindex="-1"
-                                />
-                                <label class="form-check-label" for="oneResolutionCheckbox" style="cursor: pointer"
-                                    >One resolution</label
-                                >
-                            </div>
-                            <div class="form-check form-switch form-check-inline form-control-lg">
-                                <input
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    id="darkTheme"
-                                    tabindex="-1"
-                                    v-model="darkTheme"
-                                />
-                                <label class="form-check-label" for="darkTheme" style="cursor: pointer"
-                                    >Dark theme</label
-                                >
-                            </div>
-                        </div>
-                        <div>
-                            <i
-                                class="fas fa-sync-alt mx-2 link-icon icon-tooltip p-1"
-                                :class="{'spin': fetchingEmails}"
-                                @click="fetchEmails"
-                            >
-                                <span class="icon-tooltiptext">Sync emails</span>
-                            </i>
-                            <i class="fas fa-laptop-code mx-2 link-icon icon-tooltip p-1" @click="rerenderEmails">
-                                <span class="icon-tooltiptext">Rerender emails</span>
-                            </i>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 col-lg-3 col-sm-12">
-                            <label class="form-label text-muted"
-                                >Language ({{ Object.keys(langs).length }} langs)</label
-                            >
-                            <select
-                                v-model="lang"
-                                class="form-select form-select-lg bg-light text-capitalize"
-                                tabindex="1"
-                            >
-                                <option
-                                    v-for="(lang, name) in langs"
-                                    :value="name"
-                                    class="d-flex justify-content-between"
-                                >
-                                    {{ lang }}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-md-12 col-lg-3 col-sm-12">
-                            <label class="form-label text-muted">Category</label>
-                            <select
-                                v-model="selectedFilter"
-                                class="form-select form-select-lg bg-light text-capitalize"
-                                tabindex="-1"
-                            >
-                                <option v-for="(filter, index) in Object.keys(filters)" :value="filter" :key="index">
-                                    {{ filter }}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-md-12 col-lg-6 col-sm-12">
-                            <label class="form-label text-muted"
-                                >Page {{ filteredPages.indexOf(page) + 1}}/{{ filteredPages.length }}</label
-                            >
-                            <select v-model="page" class="form-select form-select-lg bg-light" tabindex="2" autofocus>
-                                <option v-for="page in filteredPages" :value="page">{{ page }}</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row mt-4">
-                        <div class="col fs-5 text-center"><b>Subject:</b> {{ subject }}</div>
-                    </div>
+    />
+    <link rel="stylesheet" href="./css/main.css"/>
+    <link rel="stylesheet" href="./css/tooltip.css"/>
+    <!--  Favicon  -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png"/>
+    <link rel="manifest" href="./favicon/site.webmanifest"/>
+</head>
+<body class="bg-light">
+<div id="app">
+    <div class="mb-5 mx-3 controls-panel" :class="{'sticky-top': stickyControlPanel}">
+        <div class="px-5 py-4 mt-5 shadow rounded-3 bg-white">
+            <div class="mb-3">
+                <label class="form-label text-muted" style="cursor: pointer">Info</label>
+                <div class="border p-3 rounded-3 bg-light text-muted">
+                    <ul class="mb-0">
+                        <li>Use <span class="badge bg-secondary">⇅ Arrows</span> to change email and <span
+                                class="badge bg-secondary">⇄ Arrows</span> to change langs (if it doesn't work then
+                            click on the whitespace outside the emails frames)
+                        </li>
+                        <li>You can click <i class="fab fa-product-hunt link-icon icon-tooltip p-1"></i> to copy the
+                            HTML code of the message to the clipboard and go to the service Postdrop.io where will you
+                            insert the code and be able to test the visual display in more detail, as well as send an
+                            email to yourself
+                        </li>
+                        <li>Try to enable VPN if images or other resources are not loaded in emails</li>
+                        <li>Dark theme in beta, this mode is suitable for common work with email templates, but it
+                            affects some colors ⚠️
+                        </li>
+                        <li>You can copy the URL of the page or click share in your browser to send another person a link that opens the same email in the same language that was chosen by you</li>
+                    </ul>
                 </div>
             </div>
-
-            <!-- Emails -->
-            <div
-                class="d-flex flex-column flex-xl-row"
-                :class="[oneResolution ? 'justify-content-center' : 'justify-content-between']"
-            >
-                <div v-for="resolution in resolutions" class="mx-3 mb-5">
-                    <div class="d-flex justify-content-between mb-3 align-items-center bg-light p-3 rounded border">
-                        <div class="icon-tooltip">
-                            <span class="fs-4 text-secondary resolution">{{ resolution }}px</span>
-                            <span class="icon-tooltiptext">Email resolution</span>
-                        </div>
-                        <div class="actions d-flex">
-                            <!-- Opens email in new tab -->
-                            <i
-                                class="fas fa-external-link-alt mx-2 link-icon icon-tooltip p-1"
-                                :data-href="getUrl('template')"
-                                @click="openEmailInNewTab"
-                                ><span class="icon-tooltiptext">Open email in new tab</span></i
-                            >
-                            <!-- Copy to clipboard -->
-                            <i
-                                class="far fa-clone mx-2 link-icon icon-tooltip p-1"
-                                :class="copied ? 'muted' : 'link-icon'"
-                                @click="copyEmailHtmlToClipboard"
-                                ><span class="icon-tooltiptext">Copy email <b>HTML</b> code</span></i
-                            >
-                            <!-- Opens postdrop -->
-                            <i
-                                class="fab fa-product-hunt mx-2 link-icon icon-tooltip p-1"
-                                data-href="https://app.postdrop.io/"
-                                @click="goToPostdrop"
-                                ><span class="icon-tooltiptext"
-                                    >Open <span class="text-decoration-underline text-warning">Postdrop.io</span> with
-                                    email <b>HTML</b> code</span
-                                ></i
-                            >
-                        </div>
-                    </div>
-                    <div class="text-center rounded border d-flex justify-content-start iframe-wrapper">
-                        <iframe
-                            :src="getUrl('template')"
-                            style="height: 3500px"
-                            :style="{'width': resolution + 'px'}"
-                            class="shadow-lg preview-iframe rounded loading"
-                            tabindex="-1"
-                        ></iframe>
-                    </div>
-                </div>
-                <div class="mx-3 m b-5 shadow" v-if="oneResolution" style="max-width: 480px">
-                    <p class="text-break" v-for="link in iframeLinks">
-                        <span class="badge bg-secondary bg-opacity-10 text-dark fw-normal p-2"
-                            >{{link.text ? link.text : 'Image'}}</span
+            <div class="d-flex flex-wrap justify-content-between mb-3 border p-3 rounded-3 bg-light">
+                <div class="d-flex flex-wrap">
+                    <div class="form-check form-switch form-check-inline form-control-lg">
+                        <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="flexCheckChecked"
+                                v-model="stickyControlPanel"
+                                tabindex="-1"
+                        />
+                        <label class="form-check-label" for="flexCheckChecked" style="cursor: pointer"
+                        >Pin on top</label
                         >
-                        <br />
-                        <a :href="link.url" target="_blank">{{ link.text }}</a>
-                    </p>
+                    </div>
+                    <div class="form-check form-switch form-check-inline form-control-lg">
+                        <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="oneResolutionCheckbox"
+                                v-model="oneResolution"
+                                tabindex="-1"
+                        />
+                        <label class="form-check-label" for="oneResolutionCheckbox" style="cursor: pointer"
+                        >One resolution</label
+                        >
+                    </div>
+                    <div class="form-check form-switch form-check-inline form-control-lg">
+                        <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="darkTheme"
+                                tabindex="-1"
+                                v-model="darkTheme"
+                        />
+                        <label class="form-check-label" for="darkTheme" style="cursor: pointer"
+                        >Dark theme</label
+                        >
+                    </div>
                 </div>
+                <div>
+                    <i
+                            class="fas fa-sync-alt mx-2 link-icon icon-tooltip p-1"
+                            :class="{'spin': fetchingEmails}"
+                            @click="fetchEmails"
+                    >
+                        <span class="icon-tooltiptext">Sync emails</span>
+                    </i>
+                    <i class="fas fa-laptop-code mx-2 link-icon icon-tooltip p-1" @click="rerenderEmails">
+                        <span class="icon-tooltiptext">Rerender emails</span>
+                    </i>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-lg-3 col-sm-12">
+                    <label class="form-label text-muted"
+                    >Language ({{ Object.keys(langs).length }} langs)</label
+                    >
+                    <select
+                            v-model="lang"
+                            class="form-select form-select-lg bg-light text-capitalize"
+                            tabindex="1"
+                    >
+                        <option
+                                v-for="(lang, name) in langs"
+                                :value="name"
+                                class="d-flex justify-content-between"
+                        >
+                            {{ lang }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-12 col-lg-3 col-sm-12">
+                    <label class="form-label text-muted">Category</label>
+                    <select
+                            v-model="selectedFilter"
+                            class="form-select form-select-lg bg-light text-capitalize"
+                            tabindex="-1"
+                    >
+                        <option v-for="(filter, index) in Object.keys(filters)" :value="filter" :key="index">
+                            {{ filter }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-12 col-lg-6 col-sm-12">
+                    <label class="form-label text-muted"
+                    >Page {{ filteredPages.indexOf(page) + 1}}/{{ filteredPages.length }}</label
+                    >
+                    <select v-model="page" class="form-select form-select-lg bg-light" tabindex="2" autofocus>
+                        <option v-for="page in filteredPages" :value="page">{{ page }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col fs-5 text-center"><b>Subject:</b> {{ subject }}</div>
             </div>
         </div>
+    </div>
 
-        <script src="https://unpkg.com/vue@next"></script>
-        <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
-            crossorigin="anonymous"
-        ></script>
-        <script src="./js/app.js"></script>
-    </body>
+    <!-- Emails -->
+    <div
+            class="d-flex flex-column flex-xl-row"
+            :class="[oneResolution ? 'justify-content-center' : 'justify-content-between']"
+    >
+        <div v-for="resolution in resolutions" class="mx-3 mb-5">
+            <div class="d-flex justify-content-between mb-3 align-items-center bg-light p-3 rounded border">
+                <div class="icon-tooltip">
+                    <span class="fs-4 text-secondary resolution">{{ resolution }}px</span>
+                    <span class="icon-tooltiptext">Email resolution</span>
+                </div>
+                <div class="actions d-flex">
+                    <!-- Opens email in new tab -->
+                    <i
+                            class="fas fa-external-link-alt mx-2 link-icon icon-tooltip p-1"
+                            :data-href="getUrl('template')"
+                            @click="openEmailInNewTab"
+                    ><span class="icon-tooltiptext">Open email in new tab</span></i
+                    >
+                    <!-- Copy to clipboard -->
+                    <i
+                            class="far fa-clone mx-2 link-icon icon-tooltip p-1"
+                            :class="copied ? 'muted' : 'link-icon'"
+                            @click="copyEmailHtmlToClipboard"
+                    ><span class="icon-tooltiptext">Copy email <b>HTML</b> code</span></i
+                    >
+                    <!-- Opens postdrop -->
+                    <i
+                            class="fab fa-product-hunt mx-2 link-icon icon-tooltip p-1"
+                            data-href="https://app.postdrop.io/"
+                            @click="goToPostdrop"
+                    ><span class="icon-tooltiptext"
+                    >Open <span class="text-decoration-underline text-warning">Postdrop.io</span> with
+                                    email <b>HTML</b> code</span
+                    ></i
+                    >
+                </div>
+            </div>
+            <div class="text-center rounded border d-flex justify-content-start iframe-wrapper">
+                <iframe
+                        :src="getUrl('template')"
+                        style="height: 3500px"
+                        :style="{'width': resolution + 'px'}"
+                        class="shadow-lg preview-iframe rounded loading"
+                        tabindex="-1"
+                ></iframe>
+            </div>
+        </div>
+        <div class="mx-3 m b-5 shadow" v-if="oneResolution" style="max-width: 480px">
+            <p class="text-break" v-for="link in iframeLinks">
+                        <span class="badge bg-secondary bg-opacity-10 text-dark fw-normal p-2"
+                        >{{link.text ? link.text : 'Image'}}</span
+                        >
+                <br/>
+                <a :href="link.url" target="_blank">{{ link.text }}</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/vue@next"></script>
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+        crossorigin="anonymous"
+></script>
+<script src="./js/app.js"></script>
+</body>
 </html>
