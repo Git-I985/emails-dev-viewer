@@ -1,7 +1,7 @@
 import {serializeError} from 'serialize-error';
 import express from 'express';
 import {join, parse} from 'path';
-import {readdir, lstat} from 'fs/promises';
+import {readdir} from 'fs/promises';
 import {config} from './config.js';
 import chalk from 'chalk';
 import {langsMapping} from './langsMapping.js';
@@ -18,12 +18,6 @@ process.on('uncaughtException', errHandler);
 const app = express();
 const router = express.Router()
 
-// const readDirRecursive = async (dirPath, options) => await Promise.all(
-//     (await readdir(dirPath)).filter(dir => !options.exclude.find(excludedDir => dir.includes(excludedDir))).map(async (entity) => {
-//         const path = join(dirPath, entity)
-//         return (await lstat(path)).isDirectory() ? await readDirRecursive(path) : path
-//     })
-// )
 router.use(express.static(config.path.emails));
 router.use(express.static(config.path.public));
 
@@ -49,43 +43,7 @@ router.get('/emails', async (req, res) => {
         });
 });
 
-// app.get(join(config.path.baseUrl, 'ls'), async (req, res) => {
-//     const root = req?.query?.path || '/usr/src/app';
-//     readDirRecursive(root, {exclude: ['node_modules', '.git']})
-//         .then(dirs => dirs.flat(Number.POSITIVE_INFINITY))
-//         .then(dirs => {
-//             res.json({[root]: dirs})
-//         }).catch(e => {
-//         res.status(500).send(e)
-//     })
-// })
-
-// app.get('/execute/:command', (req, res) => {
-//     exec(req.params.command, { cwd: config.path.emailsProject }, (error, stdout, stderr) => {
-//         if (stderr || error) {
-//             let errorText;
-//             stdout && (errorText += stdout);
-//             error && (errorText += error);
-//
-//             console.log('[ERROR]: exectuting command via /execute/command ❌ ');
-//             console.log('[COMMAND]: ' + req.params.command);
-//             console.log('[ERROR DETAILS]:');
-//             console.group();
-//             console.group();
-//             console.log(errorText);
-//             console.groupEnd();
-//             console.groupEnd();
-//
-//             res.status(500).send(errorText);
-//         } else {
-//             console.log('[LOG]: Executing command success ' + req.params.command);
-//             res.status(200).send(stdout);
-//         }
-//     });
-// });
-
-app.use(config.path.baseUrl, router);
-
+app.use(config.path.serverBaseUrl, router);
 
 app.listen(config.server.port, () => {
     console.log(`[PORT:${config.server.port}]: Emails server started... http://localhost:${config.server.port}✅`);

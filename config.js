@@ -4,21 +4,18 @@ import { fileURLToPath } from 'url';
 export const config = {
     path: {
         currentDir: dirname(fileURLToPath(import.meta.url)),
-        get baseUrl() {
+        get serverBaseUrl() {
             return process.env.BASE_URL || '/';
         },
-        get emailsProject() {
-            return join(this.currentDir, '..', 'prime-email-templates');
-        },
         get emails() {
-            return process.env.EMAILS_DIST_DIR || join(this.emailsProject, 'dist');
+            return process.env.EMAILS_DIST_DIR
         },
         get public() {
             return join(this.currentDir, 'public');
         },
     },
     server: {
-        port: process.env.EXPRESS_PORT || 8080,
+        port: process.env.SERVER_PORT || 8080,
     },
     cli: {
         messages: {
