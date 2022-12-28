@@ -39,11 +39,11 @@
 <body class="bg-light">
 <div id="app">
     <div class="mb-5 mx-3 controls-panel" :class="{'sticky-top': stickyControlPanel}">
-        <div class="px-5 py-4 mt-5 shadow rounded-3 bg-white">
+        <div class="px-5 pb-2 pt-4 mt-5 shadow rounded-3 bg-white">
             <div class="mb-3">
-                <label class="form-label text-muted" style="cursor: pointer">Info</label>
-                <div class="border p-3 rounded-3 bg-light text-muted">
-                    <ul class="mb-0">
+                <div class="border p-2 rounded-3 bg-light text-muted">
+                    <label class="form-label mb-0 text-muted" style="cursor: pointer" @click="toggleHelpPanel">How to use (click to expand)</label>
+                    <ul class="mb-0 mt-2 d-none" :style="{display: hideHelpPanel ? 'none' : 'block !important'}">
                         <li>Use <span class="badge bg-secondary">⇅ Arrows</span> to change email and <span
                                 class="badge bg-secondary">⇄ Arrows</span> to change langs (if it doesn't work then
                             click on the whitespace outside the emails frames)
@@ -61,7 +61,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="d-flex flex-wrap justify-content-between mb-3 border p-3 rounded-3 bg-light">
+            <div class="d-flex flex-wrap justify-content-between mb-3 border align-items-center rounded-3 bg-light">
                 <div class="d-flex flex-wrap">
                     <div class="form-check form-switch form-check-inline form-control-lg">
                         <input
@@ -120,7 +120,7 @@
                     >
                     <select
                             v-model="lang"
-                            class="form-select form-select-lg bg-light text-capitalize"
+                            class="form-select form-select-lg bg-light text-capitalize py-1"
                             tabindex="1"
                     >
                         <option
@@ -136,7 +136,7 @@
                     <label class="form-label text-muted">Category</label>
                     <select
                             v-model="selectedFilter"
-                            class="form-select form-select-lg bg-light text-capitalize"
+                            class="form-select form-select-lg bg-light text-capitalize py-1"
                             tabindex="-1"
                     >
                         <option v-for="(filter, index) in Object.keys(filters)" :value="filter" :key="index">
@@ -148,12 +148,12 @@
                     <label class="form-label text-muted"
                     >Page {{ filteredPages.indexOf(page) + 1}}/{{ filteredPages.length }}</label
                     >
-                    <select v-model="page" class="form-select form-select-lg bg-light" tabindex="2" autofocus>
+                    <select v-model="page" class="form-select form-select-lg bg-light py-1" tabindex="2" autofocus>
                         <option v-for="page in filteredPages" :value="page">{{ page }}</option>
                     </select>
                 </div>
             </div>
-            <div class="row mt-4">
+            <div class="row mt-3">
                 <div class="col fs-5 text-center"><b>Subject:</b> {{ subject }}</div>
             </div>
         </div>

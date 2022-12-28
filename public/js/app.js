@@ -17,6 +17,7 @@ const app = Vue.createApp({
             oneResolution: JSON.parse(localStorage.getItem('oneResolution')) || false,
             darkTheme: JSON.parse(localStorage.getItem('darkTheme')) || false,
             iframeLinks: [],
+            hideHelpPanel: true
         };
     },
     created() {
@@ -92,6 +93,9 @@ const app = Vue.createApp({
         },
     },
     methods: {
+        toggleHelpPanel() {
+            this.hideHelpPanel = !this.hideHelpPanel
+        },
         getUrl(type) {
             const url = {
                 template: `./${this.lang}/${this.page}.html`,
